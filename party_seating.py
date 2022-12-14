@@ -43,7 +43,50 @@ def party(known: List[Set[int]]) -> Tuple[bool, Set[int], Set[int]]:
     Post:
     Ex:   party([{1, 2}, {0}, {0}]) = True, {0}, {1, 2}
     """
-    return False, set(), set()
+    ## O(|known|)
+    colors = [-1]*len(known)
+    
+    queue = []
+    ## Loop through all guests
+
+    ## O(|known|)
+    for i in range(len(known)):
+        ## If unnasigned
+        if  colors[i] == -1:
+            ## Assign color 0
+            queue.append([i, 0])
+            colors[i] = 0
+
+            while len(queue) != 0:
+                guest_and_color = queue[0]
+                queue.pop(0)
+                guest = guest_and_color[0]
+                guest_color = guest_and_color[1]
+                ## Traversing neighbours of guest
+
+                ## O(l)
+                for j in known[guest]:
+                    ## If neighbour already colored with parents color
+                    if colors[j] == guest_color:
+                        return False, set(), set()
+                    ## If uncolored
+                    if colors[j] == -1:
+                        if guest_color == 0:
+                            colors[j] = 1
+                        else:
+                            colors[j] = 0
+                        queue.append([j, colors[j]])
+
+    table_1 = set()
+    table_2 = set()
+
+    for i in range(len(known)):
+        if colors[i] == 0:
+            table_1.add(i)
+        if colors[i] == 1:
+            table_2.add(i)
+
+    return True, table_1, table_2
 
 
 class PartySeatingTest(unittest.TestCase):

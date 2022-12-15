@@ -3,8 +3,8 @@
 """
 Assignment 3, Problem 2: Party Seating
 
-Team Number:
-Student Names:
+Team Number: Group 15
+Student Names: Jonas Teglund & Oscar Wadestig
 """
 
 """
@@ -41,10 +41,10 @@ __all__ = ["party"]
 
 def party(known: List[Set[int]]) -> Tuple[bool, Set[int], Set[int]]:
     """
-    Pre:    known is a list of sets with any number of integers in it
+    Pre:    known is a list of sets with any number of integers in it. The realationships between guests are symetrical.
     Post:   Returns True or False depending on whether the problem is
             solvable, and if True, also the two tables with their
-            corresponding guests.
+            corresponding guests otherwise two empty sets.
     Ex:     party([{1, 2}, {0}, {0}]) = True, {0}, {1, 2}
     """
     ## O(|known|)

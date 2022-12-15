@@ -3,8 +3,8 @@
 """
 Assignment 3, Problem 1: Controlling the Maximum Flow
 
-Team Number:
-Student Names:
+Team Number: Group 15
+Student Names: Jonas Teglund & Oscar Wadestig
 """
 
 """
@@ -42,8 +42,8 @@ __all__ = ["sensitive"]
 
 def sensitive(G: Graph, s: str, t: str) -> Tuple[str, str]:
     """
-    Pre:    G is a satured graph, s is a source within G and t is a sink within G
-    Post:   Returns a sensitive edge if one exists, otherwise a [None, None] tuple
+    Pre:    G is a saturated graph, s is a source within G and t is a sink within G
+    Post:   Returns a sensitive edge if one exists, (u, v), otherwise a [None, None] tuple
     Ex:     sensitive(g1, 'a', 'f') = ('b', 'd')
     """
 

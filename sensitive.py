@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-'''
+"""
 Assignment 3, Problem 1: Controlling the Maximum Flow
 
 Team Number:
 Student Names:
-'''
+"""
 
-'''
+"""
 Copyright: justin.pearson@it.uu.se and his teaching assistants, 2022.
 
 This file is part of course 1DL231 at Uppsala University, Sweden.
@@ -19,14 +19,16 @@ The copyright notice and permission notice above shall be included in
 all copies and extensions of this file, and those are not allowed to
 appear publicly on the internet, both during a course instance and
 forever after.
-'''
+"""
 from typing import *  # noqa
 import unittest  # noqa
 import math  # noqa
 from src.sensitive_data import data  # noqa
 from src.graph import Graph  # noqa
+
 # If your solution needs a queue, then you can use this one:
 from collections import deque  # noqa
+
 # If you need to log information during tests, execution, or both,
 # then you can use this library:
 # Basic example:
@@ -35,14 +37,14 @@ from collections import deque  # noqa
 #   logger.debug(f"a = {a}")
 import logging  # noqa
 
-__all__ = ['sensitive']
+__all__ = ["sensitive"]
 
 
 def sensitive(G: Graph, s: str, t: str) -> Tuple[str, str]:
     """
-    Pre:
-    Post:
-    Ex:   sensitive(g1, 'a', 'f') = ('b', 'd')
+    Pre:    G is a satured graph, s is a source within G and t is a sink within G
+    Post:   Returns a sensitive edge if one exists, otherwise a [None, None] tuple
+    Ex:     sensitive(g1, 'a', 'f') = ('b', 'd')
     """
 
     ## Create a residual graph
@@ -51,13 +53,20 @@ def sensitive(G: Graph, s: str, t: str) -> Tuple[str, str]:
     ## O(|E|)
     for edge in edges:
         ## If edge is saturated and capacity > 0
-        if G.capacity(edge[0], edge[1]) == G.flow(edge[0], edge[1]) and G.capacity(edge[0], edge[1]) > 0:
+        if (
+            G.capacity(edge[0], edge[1]) == G.flow(edge[0], edge[1])
+            and G.capacity(edge[0], edge[1]) > 0
+        ):
             resudial.add_edge(edge[1], edge[0], capacity=G.capacity(edge[0], edge[1]))
 
         ## If edge is not saturated
         if G.capacity(edge[0], edge[1]) > G.flow(edge[0], edge[1]):
-            if G.capacity(edge[0], edge[1])-G.flow(edge[0], edge[1]) != 0: 
-                resudial.add_edge(edge[0], edge[1], capacity=(G.capacity(edge[0], edge[1])-G.flow(edge[0], edge[1])))
+            if G.capacity(edge[0], edge[1]) - G.flow(edge[0], edge[1]) != 0:
+                resudial.add_edge(
+                    edge[0],
+                    edge[1],
+                    capacity=(G.capacity(edge[0], edge[1]) - G.flow(edge[0], edge[1])),
+                )
             if G.flow(edge[0], edge[1]) != 0:
                 resudial.add_edge(edge[1], edge[0], capacity=(G.flow(edge[0], edge[1])))
 
@@ -66,16 +75,15 @@ def sensitive(G: Graph, s: str, t: str) -> Tuple[str, str]:
         reachable = set(s)
         unreachable = set()
         nodes = G.nodes
-        
+
         queue = [s]
         while len(queue) != 0:
             n = queue.pop(0)
             for v in resudial.neighbors(n):
                 if v not in reachable:
-                    ## Ska den appendas fram??
                     queue.append(v)
                     reachable.add(v)
-        
+
         ## Add all unreachable nodes to unreachable
         ## O(|V|)
         for node in nodes:
@@ -93,7 +101,8 @@ class SensitiveTest(unittest.TestCase):
     """
     Test suite for the sensitive edge problem
     """
-    logger = logging.getLogger('SensitiveTest')
+
+    logger = logging.getLogger("SensitiveTest")
     data = data
     sensitive = sensitive
 
@@ -112,10 +121,9 @@ class SensitiveTest(unittest.TestCase):
         """
         for i, instance in enumerate(SensitiveTest.data):
             with self.subTest(instance=i):
-                graph = instance['digraph'].copy()
-                
-                t = SensitiveTest.sensitive(graph, instance["source"],
-                                            instance["sink"])
+                graph = instance["digraph"].copy()
+
+                t = SensitiveTest.sensitive(graph, instance["source"], instance["sink"])
                 self.assertTypeSensitive(t)
                 u, v = t
                 if len(instance["sensitive_edges"]) == 0:

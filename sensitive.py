@@ -44,6 +44,48 @@ def sensitive(G: Graph, s: str, t: str) -> Tuple[str, str]:
     Post:
     Ex:   sensitive(g1, 'a', 'f') = ('b', 'd')
     """
+
+    ## Create a residual graph
+    edges = G.edges
+    resudial = Graph(is_directed=True)
+    ## O(|E|)
+    for edge in edges:
+        ## If edge is saturated and capacity > 0
+        if G.capacity(edge[0], edge[1]) == G.flow(edge[0], edge[1]) and G.capacity(edge[0], edge[1]) > 0:
+            resudial.add_edge(edge[1], edge[0], capacity=G.capacity(edge[0], edge[1]))
+
+        ## If edge is not saturated
+        if G.capacity(edge[0], edge[1]) > G.flow(edge[0], edge[1]):
+            if G.capacity(edge[0], edge[1])-G.flow(edge[0], edge[1]) != 0: 
+                resudial.add_edge(edge[0], edge[1], capacity=(G.capacity(edge[0], edge[1])-G.flow(edge[0], edge[1])))
+            if G.flow(edge[0], edge[1]) != 0:
+                resudial.add_edge(edge[1], edge[0], capacity=(G.flow(edge[0], edge[1])))
+
+    ## Sort nodes as reachable and unreachable in the residual graph with a BFS algorithm
+    if len(resudial.nodes) > 0:
+        reachable = set(s)
+        unreachable = set()
+        nodes = G.nodes
+        
+        queue = [s]
+        while len(queue) != 0:
+            n = queue.pop(0)
+            for v in resudial.neighbors(n):
+                if v not in reachable:
+                    ## Ska den appendas fram??
+                    queue.append(v)
+                    reachable.add(v)
+        
+        ## Add all unreachable nodes to unreachable
+        ## O(|V|)
+        for node in nodes:
+            if node not in reachable:
+                unreachable.add(node)
+
+        ## O(|E|)
+        for edge in edges:
+            if edge[0] in reachable and edge[1] in unreachable:
+                return edge[0], edge[1]
     return None, None
 
 
@@ -71,15 +113,14 @@ class SensitiveTest(unittest.TestCase):
         for i, instance in enumerate(SensitiveTest.data):
             with self.subTest(instance=i):
                 graph = instance['digraph'].copy()
+                
                 t = SensitiveTest.sensitive(graph, instance["source"],
                                             instance["sink"])
-
                 self.assertTypeSensitive(t)
                 u, v = t
                 if len(instance["sensitive_edges"]) == 0:
                     self.assertEqual((u, v), (None, None))
                     continue
-
                 self.assertIn(u, graph, f"Node '{u}' not in graph.")
                 self.assertIn(v, graph, f"Node '{v}' not in graph.")
                 self.assertIn((u, v), graph, f"Edge ({u}, {v}) not in graph.")

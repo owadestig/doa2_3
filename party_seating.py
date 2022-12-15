@@ -80,6 +80,7 @@ def party(known: List[Set[int]]) -> Tuple[bool, Set[int], Set[int]]:
     table_1 = set()
     table_2 = set()
 
+    #O(|known|)
     for i in range(len(known)):
         if colors[i] == 0:
             table_1.add(i)
